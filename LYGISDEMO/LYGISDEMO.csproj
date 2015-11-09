@@ -36,17 +36,24 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ArcGISRuntime.Toolkit.Samples.Desktop">
-      <HintPath>..\..\..\学习资料\arcgis-toolkit-dotnet-master\arcgis-toolkit-dotnet-master\samples\WinDesktop\ArcGISRuntime.Toolkit.Samples\bin\Debug\ArcGISRuntime.Toolkit.Samples.Desktop.dll</HintPath>
+    <Reference Include="ArcGISRuntime.Toolkit.Samples.Desktop, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\ArcGISRuntime.Toolkit.Samples.Desktop.dll</HintPath>
     </Reference>
-    <Reference Include="Esri.ArcGISRuntime, Version=10.2.6.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL" />
+    <Reference Include="Esri.ArcGISRuntime, Version=10.2.6.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\Esri.ArcGISRuntime.dll</HintPath>
+    </Reference>
     <Reference Include="Esri.ArcGISRuntime.Toolkit, Version=10.2.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Esri.ArcGISRuntime.Toolkit.10.2.6.1026\sdk\net45\Esri.ArcGISRuntime.Toolkit.dll</HintPath>
+      <HintPath>DLL\Esri.ArcGISRuntime.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -104,9 +111,27 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="SHP_FILES\chinaWGS84WEB.dbf" />
+    <None Include="SHP_FILES\chinaWGS84WEB.prj" />
+    <None Include="SHP_FILES\chinaWGS84WEB.sbn" />
+    <None Include="SHP_FILES\chinaWGS84WEB.sbx" />
+    <None Include="SHP_FILES\chinaWGS84WEB.shp" />
+    <None Include="SHP_FILES\chinaWGS84WEB.shx" />
+    <None Include="SHP_FILES\line.dbf" />
+    <None Include="SHP_FILES\line.prj" />
+    <None Include="SHP_FILES\line.sbn" />
+    <None Include="SHP_FILES\line.sbx" />
+    <None Include="SHP_FILES\line.shp" />
+    <None Include="SHP_FILES\line.shx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DLL\ArcGISRuntime.Toolkit.Samples.Desktop.dll" />
+    <Content Include="DLL\Esri.ArcGISRuntime.dll" />
+    <Content Include="DLL\Esri.ArcGISRuntime.Toolkit.dll" />
+    <Content Include="DLL\System.Windows.Interactivity.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Esri.ArcGISRuntime.10.2.6.1026\build\net45\Esri.ArcGISRuntime.targets" Condition="Exists('..\packages\Esri.ArcGISRuntime.10.2.6.1026\build\net45\Esri.ArcGISRuntime.targets')" />
