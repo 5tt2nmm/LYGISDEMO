@@ -539,6 +539,7 @@ namespace LYGISDEMO
                     //pointWin.Owner = tagView.Parent as Window;
                     pointwinshowing = true;
                     pointWin.Show();
+
                     readytodrawPoint = false;
                 }
                

@@ -72,7 +72,7 @@
             <Button x:Name="buttonpolygon" Content="绘制面" HorizontalAlignment="Left" Margin="24,139,0,0" VerticalAlignment="Top" Width="74" 
                      Command="{Binding DrawPolygonCommand}" />
             <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="26,6,0,0" TextWrapping="Wrap" Text="绘制操作" VerticalAlignment="Top" Height="21" Width="70" FontSize="16" FontWeight="Bold"/>
-            <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="13,210,0,0" TextWrapping="Wrap" Text="单击屏幕开始绘制" VerticalAlignment="Top" Width="102" Height="38"/>
+            <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="13,210,0,0" TextWrapping="Wrap" Text="*单击屏幕开始绘制 *右击图形以编辑" VerticalAlignment="Top" Width="102" Height="38"/>
             <TextBlock x:Name="textBlock3" HorizontalAlignment="Left" Margin="15,39,0,0" TextWrapping="Wrap" Text="选择一种绘制操作" VerticalAlignment="Top"/>
             <Button x:Name="button3" Content="清除图形" HorizontalAlignment="Left" Margin="24,170,0,0" VerticalAlignment="Top" Width="75"
                      Command="{Binding ClearGraphicsCommand}" />
