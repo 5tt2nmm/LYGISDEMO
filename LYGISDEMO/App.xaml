@@ -17,7 +17,7 @@
             ItemsSource="{Binding ChildLayers}">
             <Expander>
                 <Expander.Header>
-                    <CheckBox IsChecked="{Binding IsVisible}" >
+                    <CheckBox IsChecked="{Binding IsVisible}"   >
                         <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" MaxWidth="250" 
 								   TextTrimming="CharacterEllipsis" >
                             <TextBlock.Style>
@@ -52,7 +52,10 @@
 					ShowLegend="False"/>
             
         </esri:Scene>
+        
+        
         <local:SceneViewModel x:Key="SceneVM"/>
+
 
         <esri:SimpleMarkerSymbol x:Key="CG" Color="Yellow" Size="12" Style="Circle" />
         <esri:SimpleMarkerSymbol x:Key="IC" Color="Red" Size="12" Style="Circle"/>
@@ -111,5 +114,11 @@
             <esri:ClassBreakInfo Minimum="4000" Maximum="5000" Symbol="{StaticResource POPU5}" />
             <esri:ClassBreakInfo Minimum="5000" Maximum="100000" Symbol="{StaticResource POPU6}" />
         </esri:ClassBreaksRenderer>
+
+        <esri:SphereMarkerSymbol x:Key="drawtoolpoint" Color="Red" Radius="1000" Roll="1000"/>
+      
+
+
+
     </Application.Resources>
 </Application>

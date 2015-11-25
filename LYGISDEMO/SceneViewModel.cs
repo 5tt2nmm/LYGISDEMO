@@ -9,11 +9,13 @@ using Esri.ArcGISRuntime.Layers;
 using Esri.ArcGISRuntime.Data;
 using Esri.ArcGISRuntime.Geometry;
 using Esri.ArcGISRuntime.Symbology;
+using Esri.ArcGISRuntime.Symbology.SceneSymbology;
 using Esri.ArcGISRuntime.Tasks.Query;
 using System.Timers;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Windows.Media;
 
 /* ==============================================================================
 * 功能描述：SceneViewModel  
@@ -45,6 +47,27 @@ namespace LYGISDEMO
             LoadPolygonLayerCommand = new DelegateCommand(LoadPolygonLayer);
             Load3DPolygonLayerCommand = new DelegateCommand(Load3DPolygonLayer);
             MouseDoubleClickCommand = new DelegateCommand(MouseDoubleClick);
+            
+            MouseLeftButtonDownCommand = new DelegateCommand(MouseLeftButtonDown);
+            MouseRightButtonUpCommand = new DelegateCommand(MouseRightButtonUp);
+
+            DrawPointCommand = new DelegateCommand(DrawPoint);
+            DrawLineCommand = new DelegateCommand(DrawLine);
+            DrawPolygonCommand = new DelegateCommand(DrawPolygon);
+
+           
+            OnPointWinCancleCommand= new DelegateCommand(OnPointWinCancle);
+            OnPointWinOKCommand = new DelegateCommand(OnPointWinOK);
+
+            OnLineWinCancleCommand = new DelegateCommand(OnLineWinCancle);
+            OnLineWinOKCommand = new DelegateCommand(OnLineWinOK);
+
+            OnPolygonWinCancleCommand = new DelegateCommand(OnPolygonWinCancle);
+            OnPolygonWinOKCommand = new DelegateCommand(OnPolygonWinOK);
+
+            ClearGraphicsCommand= new DelegateCommand(ClearGraphics);
+
+            //this.drawPointGraphic = App.Current.Resources["res_drawpoint"] as Graphic;
         }
         private SceneView tagView;//将UI中的sceneView在初始化事件中加载到ViewModel中方便操作调用
 
@@ -61,9 +84,165 @@ namespace LYGISDEMO
         public DelegateCommand LoadPolygonLayerCommand { get; set; }
         public DelegateCommand Load3DPolygonLayerCommand { get; set; }
         public DelegateCommand MouseDoubleClickCommand { get; set; }
+        public DelegateCommand MouseMoveCommand { get; set; }
+        public DelegateCommand MouseLeftButtonDownCommand { get; set; }
+        public DelegateCommand MouseRightButtonUpCommand { get; set; }
+        public DelegateCommand DrawPointCommand { get; set; }
+        public DelegateCommand DrawLineCommand { get; set; }
+        public DelegateCommand DrawPolygonCommand { get; set; }
+
+       
+        public DelegateCommand OnPointWinCancleCommand { get; set; }
+        public DelegateCommand OnPointWinOKCommand { get; set; }
+
+        public DelegateCommand OnLineWinCancleCommand { get; set; }
+        public DelegateCommand OnLineWinOKCommand { get; set; }
+
+        public DelegateCommand OnPolygonWinCancleCommand { get; set; }
+        public DelegateCommand OnPolygonWinOKCommand { get; set; }
+
+        public DelegateCommand ClearGraphicsCommand { get; set; }
 
         public Timer NagTimer = new Timer(200);//0.2秒移动一下
         public Camera initCamera = new Camera(new MapPoint(116.3900, 39.4173, 30000, SpatialReferences.Wgs84), 0, 60);//默认视图，北京
+        
+        public GraphicsOverlay _graphicsOverlay;
+
+       
+        PointToolWin pointWin ;
+        LineToolWin LineWin;
+        PolygonToolWin PolygonWin;
+        public bool readytodrawPoint=false; public bool pointwinshowing = false;
+        public bool readytodrawLine = false;public bool linewinshowing = false;
+        public bool readytodrawPolygon = false; public bool Polygonwinshowing = false;
+
+      
+
+        private string pointgraphictext;
+        public string Pointgraphictext
+        {
+            get
+            {
+                return this.pointgraphictext;
+            }
+            set
+            {
+                this.pointgraphictext = value;
+                this.RaiseNotifyPropertyChanged();
+            }
+        }
+        private string linegraphictext;
+        public string Linegraphictext
+        {
+            get
+            {
+                return this.linegraphictext;
+            }
+            set
+            {
+                this.linegraphictext = value;
+                this.RaiseNotifyPropertyChanged();
+            }
+        }
+
+        private string polygongraphictext;
+        public string Polygongraphictext
+        {
+            get
+            {
+                return this.polygongraphictext;
+            }
+            set
+            {
+                this.polygongraphictext = value;
+                this.RaiseNotifyPropertyChanged();
+            }
+        }
+
+        private Graphic drawPointGraphic = new Graphic(new MapPoint(0, 0, 0));
+        public Graphic DrawPointGraphic
+        {
+            get { return this.drawPointGraphic; }
+            set { this.drawPointGraphic = value; this.RaiseNotifyPropertyChanged(); }
+        }
+
+        private double drawpointX;
+
+        public double DrawpointX
+        {
+            get { return (this.drawpointX); }
+            set { drawpointX = value; this.RaiseNotifyPropertyChanged(); }
+        }
+        private double drawpointY;
+        public double DrawpointY
+        {
+            get { return (this.drawpointY); }
+            set { drawpointY = value; this.RaiseNotifyPropertyChanged(); }
+        }
+        private double drawpointZ;
+        public double DrawpointZ
+        {
+            get { return (this.drawpointZ); }
+            set { drawpointZ = value; this.RaiseNotifyPropertyChanged(); }
+        }
+
+        private SolidColorBrush pointColor;
+        public SolidColorBrush PointColor
+        {
+            get { return (this.pointColor); }
+            set { pointColor = value; this.RaiseNotifyPropertyChanged(); }
+        }
+
+        private Graphic drawLineGraphic;
+        public Graphic DrawLineGraphic
+        {
+            get { return this.drawLineGraphic; }
+            set { this.drawLineGraphic = value; this.RaiseNotifyPropertyChanged(); }
+        }
+        private double drawLineZ;
+        public double DrawLineZ
+        {
+            get { return (this.drawLineZ); }
+            set { drawLineZ = value; this.RaiseNotifyPropertyChanged(); }
+        }
+
+      
+
+        public Esri.ArcGISRuntime.Geometry.PointCollection  Linepointcollec=new Esri.ArcGISRuntime.Geometry.PointCollection();
+        private SolidColorBrush lineColor = new SolidColorBrush();
+        public SolidColorBrush LineColor
+        {
+            get { return (this.lineColor); }
+            set { lineColor = value; this.RaiseNotifyPropertyChanged(); }
+        }
+        private double linewidth=10;
+        public double Linewidth
+        {
+            get { return (this.linewidth); }
+            set { linewidth = value; this.RaiseNotifyPropertyChanged(); }
+        }
+
+
+        private Graphic drawPolygonGraphic;
+        public Graphic DrawPolygonGraphic
+        {
+            get { return this.drawPolygonGraphic; }
+            set { this.drawPolygonGraphic = value; this.RaiseNotifyPropertyChanged(); }
+        }
+        private double drawPolygonZ;
+        public double DrawPolygonZ
+        {
+            get { return (this.drawPolygonZ); }
+            set { drawPolygonZ = value; this.RaiseNotifyPropertyChanged(); }
+        }
+        public Esri.ArcGISRuntime.Geometry.PointCollection Polygonpointcollec = new Esri.ArcGISRuntime.Geometry.PointCollection();
+        private SolidColorBrush polygonColor = new SolidColorBrush();
+        public SolidColorBrush PolygonColor
+        {
+            get { return (this.polygonColor); }
+            set { polygonColor = value; this.RaiseNotifyPropertyChanged(); }
+        }
+
         private string CameraString;
         public string CurrentCameraString
         {
@@ -101,6 +280,8 @@ namespace LYGISDEMO
             get { return this.tagGraphic; }
             set { this.tagGraphic = value; this.RaiseNotifyPropertyChanged(); }
         }
+
+      
 
         private void RaiseNotifyPropertyChanged([CallerMemberName]string propertyName = null)
         {
@@ -294,12 +475,422 @@ namespace LYGISDEMO
         private async void MouseDoubleClick(object parameter)
         {
             Point tagPoint = Mouse.GetPosition(tagView as FrameworkElement);
+           
             GraphicsLayer layer = scene.Layers["PointLayer"] as GraphicsLayer;
+            if (layer == null) return;
             var ga = await layer.HitTestAsync(tagView, tagPoint);
             if (ga != null)
             {
                 TagGraphic = ga;
             }
+        }
+
+        //private async void MouseMove(object parameter)
+        //{
+
+        //    Point curPoint = Mouse.GetPosition(tagView as FrameworkElement);
+        //    _graphicsOverlay = tagView.GraphicsOverlays["drawGraphicsOverlay"];
+        //    if (b_onpointmoving && b_onpoint)
+        //    {
+
+        //        var tempgraphic = drawPointGraphic;
+        //        _graphicsOverlay.Graphics.Remove(drawPointGraphic);
+
+        //        MapPoint point = tagView.ScreenToLocation(curPoint);
+        //        drawPointGraphic = new Graphic(new MapPoint(point.X, point.Y, (tempgraphic.Geometry as MapPoint).Z), tempgraphic.Attributes, tempgraphic.Symbol);
+        //        _graphicsOverlay.Graphics.Add(drawPointGraphic);
+        //        return;
+        //    }
+
+        //    var ga = await _graphicsOverlay.HitTestAsync(tagView, curPoint);
+        //    if (ga != null)
+        //    {
+        //        b_onpoint = true;
+        //        Mouse.SetCursor(Cursors.Hand);
+        //    }
+        //    else
+        //    {
+        //        b_onpoint = false;
+        //        Mouse.SetCursor(Cursors.Arrow);
+        //    }
+        //}
+        private  void MouseLeftButtonDown(object parameter)
+        {
+           if(readytodrawPoint)
+            {
+                Point curPoint = Mouse.GetPosition(tagView as FrameworkElement);
+                MapPoint tagPoint = tagView.ScreenToLocation(curPoint);
+                drawpointX = tagPoint.X;drawpointY = tagPoint.Y;
+
+                drawPointGraphic = new Graphic(tagPoint, App.Current.Resources["drawtoolpoint"] as Symbol);
+
+                Pointgraphictext = "InputLabel";
+                drawPointGraphic.Attributes["Label"] = pointgraphictext;
+
+                pointColor = new SolidColorBrush((drawPointGraphic.Symbol as SphereMarkerSymbol).Color);
+                
+
+                _graphicsOverlay = tagView.GraphicsOverlays["drawGraphicsOverlay"];
+                _graphicsOverlay.Graphics.Add(drawPointGraphic);
+
+                if(!pointwinshowing)
+                {
+                    pointWin = new PointToolWin();
+                    //pointWin.Owner = tagView.Parent as Window;
+                    pointwinshowing = true;
+                    pointWin.Show();
+                    readytodrawPoint = false;
+                }
+               
+            }
+           else if(readytodrawLine)
+            {
+                Point curPoint = Mouse.GetPosition(tagView as FrameworkElement);
+                MapPoint tagPoint = tagView.ScreenToLocation(curPoint);
+
+                
+
+                _graphicsOverlay = tagView.GraphicsOverlays["drawGraphicsOverlay"];
+                if(linewinshowing)
+                {
+                    _graphicsOverlay.Graphics.Remove(drawLineGraphic);
+                }
+                linegraphictext = "Inputlabel";
+
+                Linepointcollec.Add(new MapPoint(tagPoint.X,tagPoint.Y,drawLineZ));
+                var linesym = new SimpleLineSymbol();
+                lineColor = new SolidColorBrush((App.Current.Resources["drawtoolpoint"] as SphereMarkerSymbol).Color);
+                linesym.Color = LineColor.Color;
+                linesym.Width = linewidth; 
+                 drawLineGraphic = new Graphic(new Polyline(Linepointcollec), linesym);
+                _graphicsOverlay.Graphics.Add(drawLineGraphic);
+                if (!linewinshowing)
+                {
+                    LineWin = new LineToolWin();
+                    LineWin.Show();
+                    linewinshowing = true;
+                }
+                
+            }
+            else if (readytodrawPolygon)
+            {
+                Point curPoint = Mouse.GetPosition(tagView as FrameworkElement);
+                MapPoint tagPoint = tagView.ScreenToLocation(curPoint);
+
+
+
+                _graphicsOverlay = tagView.GraphicsOverlays["drawGraphicsOverlay"];
+                if (Polygonwinshowing)
+                {
+                    _graphicsOverlay.Graphics.Remove(drawPolygonGraphic);
+                }
+                polygongraphictext = "Inputlabel";
+
+                Polygonpointcollec.Add(new MapPoint(tagPoint.X, tagPoint.Y, drawPolygonZ));
+                var Polygonsym = new SimpleFillSymbol();
+                PolygonColor = new SolidColorBrush((App.Current.Resources["drawtoolpoint"] as SphereMarkerSymbol).Color);
+                Polygonsym.Color = PolygonColor.Color;
+                drawPolygonGraphic = new Graphic(new Polygon(Polygonpointcollec), Polygonsym);
+                _graphicsOverlay.Graphics.Add(drawPolygonGraphic);
+                if (!Polygonwinshowing)
+                {
+                    PolygonWin = new PolygonToolWin();
+                    PolygonWin.Show();
+                    Polygonwinshowing = true;
+                }
+            }
+
+        }
+        private  async void MouseRightButtonUp(object parameter)
+        {
+            Point curPoint = Mouse.GetPosition(tagView as FrameworkElement);
+            MapPoint tagPoint = tagView.ScreenToLocation(curPoint);
+            _graphicsOverlay = tagView.GraphicsOverlays["drawGraphicsOverlay"];
+            var ga = await _graphicsOverlay.HitTestAsync(tagView, curPoint);
+            if (ga != null)
+            {
+                if(ga.Geometry.GeometryType==GeometryType.Point)
+                {
+                    drawPointGraphic = ga;
+                    drawpointX = (drawPointGraphic.Geometry as MapPoint).X;
+                    drawpointY = (drawPointGraphic.Geometry as MapPoint).Y;
+                    drawpointZ = (drawPointGraphic.Geometry as MapPoint).Z;
+
+                    if(pointwinshowing==false)
+                    {
+                        pointWin = new PointToolWin();
+                        pointwinshowing = true;
+                        pointWin.ShowDialog();
+                    }
+                   
+                }
+                if (ga.Geometry.GeometryType == GeometryType.Polyline)
+                {
+                    drawLineGraphic = ga;
+                    linegraphictext = drawLineGraphic.Attributes["Label"] as string;
+                    linewidth = (drawLineGraphic.Symbol as SimpleLineSymbol).Width;
+                    Esri.ArcGISRuntime.Geometry.PointCollection tagcol = new Esri.ArcGISRuntime.Geometry.PointCollection();
+                    foreach (var part in (drawLineGraphic.Geometry as Polyline).Parts)
+                    {
+                        for(int i=0;i<part.Count;i++)
+                        {
+                            var linepart = part.ElementAt(i);
+                            tagcol.Add(linepart.StartPoint);
+                            if(i==(part.Count-1)) tagcol.Add(linepart.EndPoint);
+                            drawLineZ = linepart.StartPoint.Z;
+                        }
+                    }
+                    Linepointcollec = tagcol;
+
+                    if(linewinshowing==false)
+                    {
+                        LineWin = new LineToolWin();
+                        linewinshowing = true;
+                        LineWin.ShowDialog();
+
+                    }
+                    
+                }
+                if (ga.Geometry.GeometryType == GeometryType.Polygon)
+                {
+                    drawPolygonGraphic = ga;
+                    polygongraphictext = drawPolygonGraphic.Attributes["Label"] as string;
+                    Esri.ArcGISRuntime.Geometry.PointCollection tagcol = new Esri.ArcGISRuntime.Geometry.PointCollection();
+                    foreach (var part in (drawPolygonGraphic.Geometry as Polygon).Parts)
+                    {
+                        for (int i = 0; i < part.Count; i++)
+                        {
+                            var Polygonpart = part.ElementAt(i);
+                            tagcol.Add(Polygonpart.StartPoint);
+                            if (i == (part.Count - 1)) tagcol.Add(Polygonpart.EndPoint);
+                            drawPolygonZ = Polygonpart.StartPoint.Z;
+                        }
+                    }
+                    Polygonpointcollec = tagcol;
+
+                    if(Polygonwinshowing==false)
+                    {
+                        PolygonWin = new PolygonToolWin();
+                        Polygonwinshowing = true;
+                        PolygonWin.ShowDialog();
+                    }                   
+                }
+            }
+        }
+
+
+        private void DrawPoint(object parameter)
+        {
+            readytodrawPoint = !readytodrawPoint;
+            readytodrawLine=false;
+            readytodrawPolygon=false;
+
+            if (LineWin != null)
+            {
+                if (LineWin.IsVisible)
+                {
+                    LineWin.Close();
+                    linewinshowing = false;
+                }
+            }
+            if (PolygonWin != null)
+            {
+                if (PolygonWin.IsVisible)
+                {
+                    PolygonWin.Close();
+                    Polygonwinshowing = false;
+                }
+            }
+        }
+        private void DrawLine(object parameter)
+        {
+            readytodrawPoint = false ;
+            readytodrawLine = !readytodrawLine;
+            readytodrawPolygon = false;
+            Linepointcollec.Clear();
+
+            if (pointWin!=null)
+            {
+                if (pointWin.IsVisible)
+                {
+                    pointwinshowing = false;
+                    pointWin.Close();
+                } 
+            }
+            if (PolygonWin!=null)
+            {
+                if(PolygonWin.IsVisible)
+                {
+                    PolygonWin.Close();
+                    Polygonwinshowing = false;
+                }               
+            }
+        }
+        private void DrawPolygon(object parameter)
+        {
+            readytodrawPoint = false;
+            readytodrawLine = false;
+            readytodrawPolygon = !readytodrawPolygon;
+
+            if (pointWin != null)
+            {
+                if (pointWin.IsVisible)
+                {
+                    pointwinshowing = false;
+                    pointWin.Close();
+                }
+            }
+            if (LineWin != null)
+            {
+                if (LineWin.IsVisible)
+                {
+                    LineWin.Close();
+                    linewinshowing = false;
+                }
+            }
+        }
+
+        //public void PointInit(object parameter)
+        //{
+        //    if (drawPointGraphic == null)//新建点
+        //    {
+        //        _graphicsOverlay = tagView.GraphicsOverlays["drawGraphicsOverlay"];
+
+        //        Viewpoint vpoint = tagView.GetCurrentViewpoint(ViewpointType.CenterAndScale);
+        //        Esri.ArcGISRuntime.Geometry.Geometry tagGemotry = vpoint.TargetGeometry;
+        //        MapPoint tagPoint = new MapPoint((tagGemotry.Extent.XMax + tagGemotry.Extent.XMin) / 2, (tagGemotry.Extent.YMax + tagGemotry.Extent.YMin) / 2, 0);
+
+        //        drawPointGraphic = new Graphic(tagPoint, App.Current.Resources["drawtoolpoint"] as Symbol);
+
+        //        Pointgraphictext = "InputLabel";
+        //        drawPointGraphic.Attributes["Label"] = pointgraphictext;
+
+        //        _graphicsOverlay.Graphics.Add(drawPointGraphic);
+
+        //        DrawpointX = (drawPointGraphic.Geometry as MapPoint).X;
+        //        DrawpointY = (drawPointGraphic.Geometry as MapPoint).Y;
+
+        //    }
+        //    else//编辑点
+        //    {
+
+        //    }
+
+
+        //}
+        public void OnPointWinCancle(object parameter)
+        {
+            pointWin.Close();
+            pointwinshowing = false;
+            readytodrawPoint = false;
+        }
+        public void OnPointWinOK(object parameter)
+        {
+             _graphicsOverlay = tagView.GraphicsOverlays["drawGraphicsOverlay"];
+            var tempgraphic = drawPointGraphic;
+            _graphicsOverlay.Graphics.Remove(drawPointGraphic);
+
+            SphereMarkerSymbol tagsymbol = App.Current.Resources["drawtoolpoint"] as SphereMarkerSymbol;
+            pointColor=parameter as SolidColorBrush;
+            tagsymbol.Color = pointColor.Color;
+
+            drawPointGraphic = new Graphic(new MapPoint(drawpointX, drawpointY, drawpointZ), tempgraphic.Attributes, tempgraphic.Symbol);
+            drawPointGraphic.Attributes["Label"] = pointgraphictext;
+            _graphicsOverlay.Graphics.Add(drawPointGraphic);
+            drawPointGraphic = new Graphic();
+
+            pointwinshowing = false;
+            pointWin.Close();
+
+            return;
+          
+        }
+
+        public void OnLineWinCancle(object parameter)
+        {
+            readytodrawLine = false;
+            linewinshowing = false;
+            LineWin.Close();
+        }
+        public void OnLineWinOK(object parameter)
+        {
+            readytodrawLine = false;
+            _graphicsOverlay = tagView.GraphicsOverlays["drawGraphicsOverlay"];
+            var tempgraphic = drawLineGraphic;
+            _graphicsOverlay.Graphics.Remove(drawLineGraphic);
+
+            SphereMarkerSymbol tagsymbol = App.Current.Resources["drawtoolLine"] as SphereMarkerSymbol;
+            LineColor = parameter as SolidColorBrush;
+            var linesym = new SimpleLineSymbol();
+            
+            linesym.Color = LineColor.Color;
+            linesym.Width = linewidth;
+
+            var sPointcollect = new Esri.ArcGISRuntime.Geometry.PointCollection();
+
+            foreach(MapPoint tPoint in Linepointcollec)
+            {
+                MapPoint sPoint = new MapPoint(tPoint.X, tPoint.Y, drawLineZ);
+                sPointcollect.Add(sPoint);
+            }
+
+            drawLineGraphic = new Graphic(new Polyline(sPointcollect), linesym);
+            drawLineGraphic.Attributes["Label"] = Linegraphictext;
+            _graphicsOverlay.Graphics.Add(drawLineGraphic);
+
+            drawLineZ = 0;
+            Linepointcollec.Clear();
+            linewinshowing = false;
+            LineWin.Close();
+
+            return;
+
+        }
+
+        public void OnPolygonWinCancle(object parameter)
+        {
+            readytodrawPolygon = false;
+            Polygonwinshowing = false;
+            PolygonWin.Close();
+        }
+        public void OnPolygonWinOK(object parameter)
+        {
+            readytodrawPolygon = false;
+            _graphicsOverlay = tagView.GraphicsOverlays["drawGraphicsOverlay"];
+            var tempgraphic = drawPolygonGraphic;
+            _graphicsOverlay.Graphics.Remove(drawPolygonGraphic);
+
+            SphereMarkerSymbol tagsymbol = App.Current.Resources["drawtoolPolygon"] as SphereMarkerSymbol;
+            PolygonColor = parameter as SolidColorBrush;
+            var Polygonsym = new SimpleFillSymbol();
+
+            Polygonsym.Color = PolygonColor.Color;
+
+            var sPointcollect = new Esri.ArcGISRuntime.Geometry.PointCollection();
+
+            foreach (MapPoint tPoint in Polygonpointcollec)
+            {
+                MapPoint sPoint = new MapPoint(tPoint.X, tPoint.Y, drawPolygonZ);
+                sPointcollect.Add(sPoint);
+            }
+
+            drawPolygonGraphic = new Graphic(new Polygon(sPointcollect), Polygonsym);
+            drawPolygonGraphic.Attributes["Label"] = Polygongraphictext;
+            _graphicsOverlay.Graphics.Add(drawPolygonGraphic);
+
+            drawPolygonZ = 0;
+            Polygonpointcollec.Clear();
+            Polygonwinshowing = false;
+            PolygonWin.Close();
+
+            return;
+
+        }
+
+        public void ClearGraphics(object parameter)
+        {
+            _graphicsOverlay = tagView.GraphicsOverlays["drawGraphicsOverlay"];
+            _graphicsOverlay.Graphics.Clear();
         }
     }
 }

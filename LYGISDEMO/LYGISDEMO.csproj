@@ -40,6 +40,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\ArcGISRuntime.Toolkit.Samples.Desktop.dll</HintPath>
     </Reference>
+    <Reference Include="CustomWPFColorPicker">
+      <HintPath>DLL\CustomWPFColorPicker.dll</HintPath>
+    </Reference>
     <Reference Include="Esri.ArcGISRuntime, Version=10.2.6.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\Esri.ArcGISRuntime.dll</HintPath>
@@ -48,8 +51,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\Esri.ArcGISRuntime.Toolkit.dll</HintPath>
     </Reference>
+    <Reference Include="microsoft.expression.utility, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=x86" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\System.Windows.Interactivity.dll</HintPath>
@@ -63,6 +70,8 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -73,7 +82,20 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DelegateCommand.cs" />
+    <Compile Include="LineToolWin.xaml.cs">
+      <DependentUpon>LineToolWin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PointToolWin.xaml.cs">
+      <DependentUpon>PointToolWin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PolygonToolWin.xaml.cs">
+      <DependentUpon>PolygonToolWin.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SceneViewModel.cs" />
+    <Page Include="LineToolWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -86,6 +108,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="PointToolWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PolygonToolWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

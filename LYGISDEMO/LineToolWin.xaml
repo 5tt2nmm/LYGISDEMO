@@ -1,0 +1,46 @@
+﻿<Window x:Class="LYGISDEMO.LineToolWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+         xmlns:CustomWPFColorPicker="clr-namespace:CustomWPFColorPicker;assembly=CustomWPFColorPicker"
+         xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:LYGISDEMO"
+        mc:Ignorable="d"
+         Title="线条对象编辑" Height="346.8" Width="300" 
+        DataContext="{Binding Mode=OneWay, Source={StaticResource SceneVM}}">
+
+    <interactivity:Interaction.Triggers>
+        <interactivity:EventTrigger EventName="Closed">
+            <interactivity:InvokeCommandAction 
+                        Command="{Binding OnLineWinCancleCommand}"/>
+        </interactivity:EventTrigger>
+    </interactivity:Interaction.Triggers>
+    
+    <Grid>
+        <Label x:Name="labellinetext" Content="标注名称：" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="textBoxline" HorizontalAlignment="Left" Height="23" Margin="80,13,0,0" TextWrapping="Wrap" Text="{Binding Linegraphictext}" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="buttonline" Content="确定" HorizontalAlignment="Left" Margin="106,282,0,0" VerticalAlignment="Top" Width="75"  Command="{Binding OnLineWinOKCommand}" CommandParameter="{Binding CurrentColor, ElementName=ForeColorPickerline}"/>
+        <Button x:Name="button1line" Content="取消" HorizontalAlignment="Left" Margin="207,283,0,0" VerticalAlignment="Top" Width="75"  Command="{Binding OnLineWinCancleCommand}"/>
+        <Slider x:Name="sliderline" HorizontalAlignment="Left" Margin="82,100,0,0" VerticalAlignment="Top" Width="116" Maximum="10000" SmallChange="1" TickPlacement="BottomRight" Cursor="Hand" Value="{Binding DrawLineZ}"/>
+        <Label x:Name="labellineheight" HorizontalAlignment="Left" Margin="17,98,0,0" VerticalAlignment="Top" Content="高度："/>
+        <TextBox x:Name="textBox3line" HorizontalAlignment="Left" Height="23" Margin="82,131,0,0" TextWrapping="Wrap" Text="{Binding Value, ElementName=sliderline}" VerticalAlignment="Top" Width="67"/>
+        <Label x:Name="label4line" Content="米" HorizontalAlignment="Left" Margin="156,129,0,0" VerticalAlignment="Top"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="88,163,0,0" VerticalAlignment="Top" Height="20">
+            <TextBlock 
+        		Text="Please Select a Color" 
+        		FontWeight="Bold"    
+        		FontSize="1" 
+        		Margin="10"
+        		Foreground="{Binding CurrentColor, ElementName=ForeColorPickerline}"/>
+            <CustomWPFColorPicker:ColorPickerControlView x:Name="ForeColorPickerline" Width="46" CurrentColor="{Binding LineColor}" >
+            </CustomWPFColorPicker:ColorPickerControlView>
+        </StackPanel>
+        <Label x:Name="label5line" Content="颜色选择：" HorizontalAlignment="Left" Margin="21,161,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label1line" Content="线条宽度：" HorizontalAlignment="Left" Margin="10,51,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="textBox1line" HorizontalAlignment="Left" Height="23" Margin="81,54,0,0" TextWrapping="Wrap" Text="{Binding Linewidth}" VerticalAlignment="Top" Width="120" />
+
+
+
+    </Grid>
+</Window>

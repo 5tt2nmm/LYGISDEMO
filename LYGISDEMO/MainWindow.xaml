@@ -14,6 +14,22 @@
     <Grid>
 
         <esri:SceneView x:Name="LYSceneView"  IsLogoVisible="False" IsNavigating="True"  Scene="{Binding IncidentScene}" Margin="0,26,0,0">
+            <esri:SceneView.GraphicsOverlays>
+                <esri:GraphicsOverlay ID="drawGraphicsOverlay" >
+                    <esri:GraphicsOverlay.SceneProperties>
+                        <esri:LayerSceneProperties SurfacePlacement="Relative"/>
+                    </esri:GraphicsOverlay.SceneProperties>
+                    <esri:GraphicsOverlay.Labeling>
+                        <esri:LabelProperties IsEnabled="True">
+                            <esri:AttributeLabelClass TextExpression="[Label]" >
+                                <esri:TextSymbol Color="White" />
+                            </esri:AttributeLabelClass>
+                        </esri:LabelProperties>
+                    </esri:GraphicsOverlay.Labeling>
+                </esri:GraphicsOverlay>
+
+            </esri:SceneView.GraphicsOverlays>
+
             <interactivity:Interaction.Triggers>
                 <interactivity:EventTrigger EventName="Loaded">
                     <interactivity:InvokeCommandAction 
@@ -28,6 +44,14 @@
                     <interactivity:InvokeCommandAction 
                         Command="{Binding MouseDoubleClickCommand}"/>
                 </interactivity:EventTrigger>
+                <interactivity:EventTrigger EventName="MouseLeftButtonDown">
+                    <interactivity:InvokeCommandAction 
+                        Command="{Binding MouseLeftButtonDownCommand}"/>
+                </interactivity:EventTrigger>
+                <interactivity:EventTrigger EventName="MouseRightButtonUp">
+                    <interactivity:InvokeCommandAction 
+                        Command="{Binding MouseRightButtonUpCommand}"/>
+                </interactivity:EventTrigger>
             </interactivity:Interaction.Triggers>
         </esri:SceneView>
         <Grid HorizontalAlignment="Left" Height="137" Margin="15,34,0,0" VerticalAlignment="Top" Width="123" Background="White">
@@ -38,6 +62,20 @@
             <Button x:Name="button2" Content="停止导航" HorizontalAlignment="Left" Margin="23,99,0,0" VerticalAlignment="Top" Width="74" 
                      Command="{Binding NavigateStopCommand}" />
             <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="26,6,0,0" TextWrapping="Wrap" Text="导航操作" VerticalAlignment="Top" Height="21" Width="70" FontSize="16" FontWeight="Bold"/>
+        </Grid>
+
+        <Grid HorizontalAlignment="Left" Height="264" Margin="15,176,0,0" VerticalAlignment="Top" Width="123" Background="White">
+            <Button x:Name="buttonpoint" Content="绘制点" HorizontalAlignment="Left" Margin="22,73,0,0" VerticalAlignment="Top" Width="75" 
+                    Command="{Binding DrawPointCommand}" />
+            <Button x:Name="buttonline" Content="绘制线条" HorizontalAlignment="Left" Margin="22,106,0,0" VerticalAlignment="Top" Width="76" 
+                     Command="{Binding DrawLineCommand}" />
+            <Button x:Name="buttonpolygon" Content="绘制面" HorizontalAlignment="Left" Margin="24,139,0,0" VerticalAlignment="Top" Width="74" 
+                     Command="{Binding DrawPolygonCommand}" />
+            <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="26,6,0,0" TextWrapping="Wrap" Text="绘制操作" VerticalAlignment="Top" Height="21" Width="70" FontSize="16" FontWeight="Bold"/>
+            <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="13,210,0,0" TextWrapping="Wrap" Text="单击屏幕开始绘制" VerticalAlignment="Top" Width="102" Height="38"/>
+            <TextBlock x:Name="textBlock3" HorizontalAlignment="Left" Margin="15,39,0,0" TextWrapping="Wrap" Text="选择一种绘制操作" VerticalAlignment="Top"/>
+            <Button x:Name="button3" Content="清除图形" HorizontalAlignment="Left" Margin="24,170,0,0" VerticalAlignment="Top" Width="75"
+                     Command="{Binding ClearGraphicsCommand}" />
         </Grid>
         <TextBlock Height="30" Width="Auto" 
             FontSize="16" Foreground="AliceBlue"
